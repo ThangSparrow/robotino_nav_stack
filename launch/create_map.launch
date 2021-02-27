@@ -1,0 +1,16 @@
+<launch>
+
+  <node type="rviz" name="rviz" pkg="rviz" args="-d $(find robotino_nav_stack)/rviz/robotino_mapping.rviz"/>
+
+  <!-- run robotino_node -->
+  
+  <!-- run robotino_teleop -->
+  <include file="$(find robotino_teleop)/launch/keyboard_teleop.launch"/>
+  
+  <!-- tf base_link to laser_link-->
+  <node pkg="tf" type="static_transform_publisher" name="tf_base2laser" args="0.1 0 0.15 0.0 0.0 0.0 base_link laser_link 100"/>
+
+  <!-- slam gmapping-->
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping"/>
+    <remap from="scan" to="scan" />
+</launch>

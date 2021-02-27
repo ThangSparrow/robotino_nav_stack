@@ -1,0 +1,30 @@
+<launch>
+
+  <!-- run map server-->
+  <node pkg="map_server" type="map_server" name="map" args="$(find robotino_nav_stack)/maps/MRT_C304.yaml" />
+  
+  <node type="rviz" name="rviz" pkg="rviz" args="-d $(find robotino_nav_stack)/rviz/robotino_nav.rviz"/>
+  
+  <!-- run tf node: base -> laser -->
+  <node pkg="tf" type="static_transform_publisher" name="tf_base2laser" args="0.1 0 0.15 0.0 0.0 0.0 base_link laser_link 100"/>
+  
+  <!-- run amcl -->
+  <include file="$(find amcl)/examples/amcl_omni.launch"/>
+  
+  <!-- run move_base node for autonomous navigation -->
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+
+    <param name="base_global_planner" value="global_planner/GlobalPlanner"/>
+    <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS"/>  
+    
+    <rosparam file="$(find robotino_nav_stack)/params/base_local_planner.yaml" command="load"/>
+
+    <rosparam file="$(find robotino_nav_stack)/params/common_costmap.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find robotino_nav_stack)/params/common_costmap.yaml" command="load" ns="local_costmap" />
+    
+    <rosparam file="$(find robotino_nav_stack)/params/local_costmap.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find robotino_nav_stack)/params/global_costmap.yaml" command="load" ns="global_costmap" /> 
+
+  </node> 
+
+</launch>
